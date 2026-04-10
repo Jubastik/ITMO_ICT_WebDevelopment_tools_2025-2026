@@ -1,0 +1,14 @@
+site_name: "Лабораторная работа 1 — Буккросинг API"
+site_description: "Отчёт по лабораторной работе 1: Реализация серверного приложения FastAPI для буккросинга"
+site_author: "Гордеев Артём, K3339"
+
+theme:
+  name: material
+  language: ru
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+
+nav:
+  - Отчёт: index.md
