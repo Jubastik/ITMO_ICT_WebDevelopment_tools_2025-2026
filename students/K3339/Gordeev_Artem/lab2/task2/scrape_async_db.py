@@ -1,7 +1,7 @@
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
-from models import ScrapedPage, get_session
+from models import ScrapedPage, AsyncSessionLocal
 import time
 
 async def parse_and_save(session, url):
@@ -12,18 +12,18 @@ async def parse_and_save(session, url):
             title = soup.title.string if soup.title else "No Title"
             title = title.strip()
             
-            with get_session() as db_session:
+            async with AsyncSessionLocal() as db_session:
                 page = ScrapedPage(url=url, title=title)
                 db_session.add(page)
-                db_session.commit()
+                await db_session.commit()
                 
-            print(f"[Async] Спарсено: {url} -> {title}")
+            print(f"[AsyncDB] Спарсено: {url} -> {title}")
             return True
     except Exception as e:
-        print(f"[Async] Ошибка {url}: {e}")
+        print(f"[AsyncDB] Ошибка {url}: {e}")
         return False
 
-async def run_async(urls):
+async def run_async_db(urls):
     start_time = time.time()
     async with aiohttp.ClientSession() as session:
         tasks = [parse_and_save(session, url) for url in urls]
@@ -33,5 +33,5 @@ async def run_async(urls):
 
 if __name__ == "__main__":
     test_urls = ["https://www.python.org", "https://www.google.com"]
-    duration = asyncio.run(run_async(test_urls))
-    print(f"Async: Время парсинга: {duration:.4f}сек")
+    duration = asyncio.run(run_async_db(test_urls))
+    print(f"Async DB Scrape Time: {duration:.4f}сек")

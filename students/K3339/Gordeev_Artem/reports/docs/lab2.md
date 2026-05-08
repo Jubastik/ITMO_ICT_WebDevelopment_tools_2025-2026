@@ -148,13 +148,32 @@ async def parse_and_save(session, url):
             db_session.commit()
 ```
 
+#### AsyncIO (с асинхронной БД)
+Для полноценной асинхронной работы необходимо использовать асинхронный драйвер БД. Это позволяет не блокировать Event Loop во время записи в базу данных.
+
+```python
+async def parse_and_save(session, url):
+    async with session.get(url) as response:
+        html = await response.text()
+        soup = BeautifulSoup(html, 'lxml')
+        title = soup.title.string.strip()
+        async with AsyncSessionLocal() as db_session:
+            page = ScrapedPage(url=url, title=title)
+            db_session.add(page)
+            await db_session.commit()
+```
+
 ### Сравнение времени выполнения (I/O-bound)
 
 | Подход | Время (сек) |
 |---|---|
-| **AsyncIO** | **0.7399** |
-| **Multiprocessing** | 1.2850 |
-| **Threading** | 1.3236 |
+| **AsyncIO (Async DB)** | **0.7171** |
+| **AsyncIO (Sync DB)** | 0.7166 |
+| **Multiprocessing** | 1.3387 |
+| **Threading** | 0.7360 |
+
+**Анализ подключения к БД:** 
+При небольшом количестве запросов разница между синхронным и асинхронным подключением в рамках `asyncio` минимальна. Однако использование асинхронного драйвера (`Async DB`) является более правильным подходом, так как синхронная вставка (`Sync DB`) блокирует Event Loop, что привело бы к деградации производительности при обработке сотен или тысяч URL одновременно.
 
 **Вывод:** В задачах ввода-вывода (I/O-bound), таких как сетевые запросы, наиболее эффективным оказался AsyncIO. Он потребляет меньше ресурсов, чем процессы или потоки, и обеспечивает высокую производительность за счет неблокирующего ожидания.
 
