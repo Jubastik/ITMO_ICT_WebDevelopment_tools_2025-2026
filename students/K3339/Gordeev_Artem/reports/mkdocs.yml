@@ -1,9 +1,9 @@
-site_name: "Лабораторная работа 1 — Буккросинг API"
-site_description: "Отчёт по лабораторной работе 1: Реализация серверного приложения FastAPI для буккросинга"
+site_name: "Отчёты по веб-разработке"
+site_description: "Сборник отчётов по лабораторным работам Гордеева Артёма"
 site_author: "Гордеев Артём, K3339"
 
 theme:
-  name: material
+  name: mkdocs
   language: ru
   palette:
     - scheme: default
@@ -11,4 +11,5 @@ theme:
       accent: indigo
 
 nav:
-  - Отчёт: index.md
+  - Лабораторная работа 1: index.md
+  - Лабораторная работа 2: lab2.md
