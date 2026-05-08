@@ -240,6 +240,18 @@ def run_multiprocessing(urls):
             db_session.add(page)
             db_session.commit()
 </code></pre>
+<h4 id="asyncio_2">AsyncIO (с асинхронной БД)</h4>
+<p>Для полноценной асинхронной работы необходимо использовать асинхронный драйвер БД. Это позволяет не блокировать Event Loop во время записи в базу данных.</p>
+<pre><code class="language-python">async def parse_and_save(session, url):
+    async with session.get(url) as response:
+        html = await response.text()
+        soup = BeautifulSoup(html, 'lxml')
+        title = soup.title.string.strip()
+        async with AsyncSessionLocal() as db_session:
+            page = ScrapedPage(url=url, title=title)
+            db_session.add(page)
+            await db_session.commit()
+</code></pre>
 <h3 id="io-bound">Сравнение времени выполнения (I/O-bound)</h3>
 <table>
 <thead>
@@ -250,19 +262,25 @@ def run_multiprocessing(urls):
 </thead>
 <tbody>
 <tr>
-<td><strong>AsyncIO</strong></td>
-<td><strong>0.7399</strong></td>
+<td><strong>AsyncIO (Async DB)</strong></td>
+<td><strong>0.7171</strong></td>
+</tr>
+<tr>
+<td><strong>AsyncIO (Sync DB)</strong></td>
+<td>0.7166</td>
 </tr>
 <tr>
 <td><strong>Multiprocessing</strong></td>
-<td>1.2850</td>
+<td>1.3387</td>
 </tr>
 <tr>
 <td><strong>Threading</strong></td>
-<td>1.3236</td>
+<td>0.7360</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Анализ подключения к БД:</strong> 
+При небольшом количестве запросов разница между синхронным и асинхронным подключением в рамках <code>asyncio</code> минимальна. Однако использование асинхронного драйвера (<code>Async DB</code>) является более правильным подходом, так как синхронная вставка (<code>Sync DB</code>) блокирует Event Loop, что привело бы к деградации производительности при обработке сотен или тысяч URL одновременно.</p>
 <p><strong>Вывод:</strong> В задачах ввода-вывода (I/O-bound), таких как сетевые запросы, наиболее эффективным оказался AsyncIO. Он потребляет меньше ресурсов, чем процессы или потоки, и обеспечивает высокую производительность за счет неблокирующего ожидания.</p>
 <h2 id="global-interpreter-lock-gil">Влияние Global Interpreter Lock (GIL)</h2>
 <p>GIL - это механизм, который гарантирует, что в любой момент времени только один поток может выполнять байт-код Python. Это необходимо для обеспечения потокобезопасности при работе с памятью (управление ссылками).</p>
