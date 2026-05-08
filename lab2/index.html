@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Гордеев Артём, K3339">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Лабораторная работа 2 - Отчёты по веб-разработке</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Отчёты по веб-разработке</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Лабораторная работа 1</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Лабораторная работа 2</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href=".." class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" class="nav-link disabled">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#2" class="nav-link">Лабораторная работа 2. Потоки. Процессы. Асинхронность.</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#_1" class="nav-link">Цель работы</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#1" class="nav-link">Задача 1. Параллельное вычисление суммы</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#2-" class="nav-link">Задача 2. Параллельный парсинг веб-страниц</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#global-interpreter-lock-gil" class="nav-link">Влияние Global Interpreter Lock (GIL)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#cpu-bound-io-bound" class="nav-link">Выбор инструмента для CPU-bound и I/O-bound задач</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#_5" class="nav-link">Итоговый вывод</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="2">Лабораторная работа 2. Потоки. Процессы. Асинхронность.</h1>
+<p><strong>Студент:</strong> Гордеев Артём<br />
+<strong>Группа:</strong> K3339<br />
+<strong>Тема:</strong> Изучение многопоточности, многопроцессорности и асинхронности в Python.</p>
+<h2 id="_1">Цель работы</h2>
+<p>Понять отличия между потоками и процессами, изучить работу Global Interpreter Lock и понять, как работает асинхронность в Python. Научиться выбирать подходящий инструмент для решения CPU-bound и I/O-bound задач.</p>
+<hr />
+<h2 id="1">Задача 1. Параллельное вычисление суммы</h2>
+<p>Задача: Написать три программы для вычисления суммы чисел от 1 до 10^8, используя подходы <code>threading</code>, <code>multiprocessing</code> и <code>asyncio</code>.</p>
+<h3 id="_2">Реализация</h3>
+<h4 id="threading">Threading (Многопоточность)</h4>
+<p>Используется модуль <code>threading</code>. Диапазон чисел делится на равные части между потоками.</p>
+<pre><code class="language-python">def calculate_sum(start, end, result, index):
+    total = 0
+    for i in range(start, end + 1):
+        total += i
+    result[index] = total
+
+def run_threading(n, num_threads=4):
+    threads = []
+    results = [0] * num_threads
+    step = n // num_threads
+    for i in range(num_threads):
+        start = i * step + 1
+        end = (i + 1) * step if i != num_threads - 1 else n
+        thread = threading.Thread(target=calculate_sum, args=(start, end, results, i))
+        threads.append(thread)
+        thread.start()
+    for thread in threads:
+        thread.join()
+    return sum(results)
+</code></pre>
+<h4 id="multiprocessing">Multiprocessing (Многопроцессорность)</h4>
+<p>Используется модуль <code>multiprocessing.Pool</code>. Расчеты распределяются по ядрам процессора.</p>
+<pre><code class="language-python">def calculate_sum(range_tuple):
+    start, end = range_tuple
+    total = 0
+    for i in range(start, end + 1):
+        total += i
+    return total
+
+def run_multiprocessing(n, num_processes=4):
+    step = n // num_processes
+    ranges = [(i * step + 1, (i + 1) * step if i != num_processes - 1 else n) for i in range(num_processes)]
+    with multiprocessing.Pool(processes=num_processes) as pool:
+        results = pool.map(calculate_sum, ranges)
+    return sum(results)
+</code></pre>
+<h4 id="asyncio">AsyncIO (Асинхронность)</h4>
+<p>Используется <code>asyncio.gather</code>. Задача выполняется конкурентно в одном потоке.</p>
+<pre><code class="language-python">async def calculate_sum(start, end):
+    total = 0
+    for i in range(start, end + 1):
+        total += i
+        if i % 1_000_000 == 0:
+            await asyncio.sleep(0) # Уступаем управление Event Loop
+    return total
+</code></pre>
+<h3 id="cpu-bound">Сравнение времени выполнения (CPU-bound)</h3>
+<table>
+<thead>
+<tr>
+<th>Подход</th>
+<th>Время (сек)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Multiprocessing</strong></td>
+<td><strong>0.5985</strong></td>
+</tr>
+<tr>
+<td><strong>Threading</strong></td>
+<td>1.8739</td>
+</tr>
+<tr>
+<td><strong>AsyncIO</strong></td>
+<td>3.1257</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Вывод:</strong> В задачах на вычисления (CPU-bound) лучшим выбором является Multiprocessing, так как он позволяет использовать несколько ядер процессора одновременно, обходя ограничения GIL. Threading работает медленнее из-за переключений контекста и GIL, а AsyncIO в данном случае дает только накладные расходы.</p>
+<hr />
+<h2 id="2-">Задача 2. Параллельный парсинг веб-страниц</h2>
+<p>Задача: Спарсить заголовки нескольких веб-страниц и сохранить их в базу данных PostgreSQL, используя три подхода.</p>
+<h3 id="_3">Модель данных</h3>
+<p>Для хранения результатов создана таблица <code>scraped_pages</code> в базе данных из первой лабораторной работы.</p>
+<pre><code class="language-python">class ScrapedPage(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    url: str = Field()
+    title: str = Field()
+</code></pre>
+<h3 id="_4">Реализация</h3>
+<h4 id="threading_1">Threading</h4>
+<p>Используется <code>ThreadPoolExecutor</code> и библиотека <code>requests</code>. Потоки эффективны здесь, так как большую часть времени они «спят», ожидая ответа от сервера.</p>
+<pre><code class="language-python">def parse_and_save(url):
+    response = requests.get(url, timeout=10)
+    soup = BeautifulSoup(response.text, 'lxml')
+    title = soup.title.string.strip() if soup.title else &quot;No Title&quot;
+    with get_session() as session:
+        page = ScrapedPage(url=url, title=title)
+        session.add(page)
+        session.commit()
+</code></pre>
+<h4 id="multiprocessing_1">Multiprocessing</h4>
+<p>Использование процессов для парсинга также возможно, однако каждый процесс требует ресурсов на запуск и отдельного подключения к БД.</p>
+<pre><code class="language-python">def parse_and_save(url):
+    response = requests.get(url, timeout=10)
+    soup = BeautifulSoup(response.text, 'lxml')
+    title = soup.title.string.strip() if soup.title else &quot;No Title&quot;
+    with get_session() as session:
+        page = ScrapedPage(url=url, title=title)
+        session.add(page)
+        session.commit()
+
+def run_multiprocessing(urls):
+    with multiprocessing.Pool(processes=4) as pool:
+        pool.map(parse_and_save, urls)
+</code></pre>
+<h4 id="asyncio_1">AsyncIO</h4>
+<p>Используется <code>aiohttp</code> для асинхронных HTTP-запросов. Это самый современный и легкий способ обработки множества сетевых соединений.</p>
+<pre><code class="language-python">async def parse_and_save(session, url):
+    async with session.get(url) as response:
+        html = await response.text()
+        soup = BeautifulSoup(html, 'lxml')
+        title = soup.title.string.strip() if soup.title else &quot;No Title&quot;
+        with get_session() as db_session:
+            page = ScrapedPage(url=url, title=title)
+            db_session.add(page)
+            db_session.commit()
+</code></pre>
+<h3 id="io-bound">Сравнение времени выполнения (I/O-bound)</h3>
+<table>
+<thead>
+<tr>
+<th>Подход</th>
+<th>Время (сек)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AsyncIO</strong></td>
+<td><strong>0.7399</strong></td>
+</tr>
+<tr>
+<td><strong>Multiprocessing</strong></td>
+<td>1.2850</td>
+</tr>
+<tr>
+<td><strong>Threading</strong></td>
+<td>1.3236</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Вывод:</strong> В задачах ввода-вывода (I/O-bound), таких как сетевые запросы, наиболее эффективным оказался AsyncIO. Он потребляет меньше ресурсов, чем процессы или потоки, и обеспечивает высокую производительность за счет неблокирующего ожидания.</p>
+<h2 id="global-interpreter-lock-gil">Влияние Global Interpreter Lock (GIL)</h2>
+<p>GIL - это механизм, который гарантирует, что в любой момент времени только один поток может выполнять байт-код Python. Это необходимо для обеспечения потокобезопасности при работе с памятью (управление ссылками).</p>
+<h3 id="gil">Как GIL проявил себя в работе:</h3>
+<p><strong>В задаче 1 (CPU-bound):</strong></p>
+<ul>
+<li><strong>Threading</strong> показал результат в 3 раза хуже, чем Multiprocessing. Это произошло потому, что потоки постоянно боролись за владение GIL. Несмотря на наличие 4-х потоков, вычисления велись фактически в один поток, но с дополнительными затратами на переключение контекста.</li>
+<li><strong>Multiprocessing</strong> успешно обошел это ограничение, так как каждый процесс имеет свой собственный интерпретатор и свой собственный GIL. Это позволило выполнять вычисления параллельно на разных ядрах CPU.</li>
+</ul>
+<p><strong>В задаче 2 (I/O-bound):</strong></p>
+<ul>
+<li>В этой задаче влияние GIL было минимальным. Когда поток вызывает <code>requests.get()</code>, он переходит в режим ожидания ответа от сети. В этот момент Python <strong>освобождает GIL</strong>, позволяя другим потокам начать работу. Именно поэтому <code>threading</code> в задачах ввода-вывода работает почти так же быстро, как и <code>multiprocessing</code>.</li>
+</ul>
+<hr />
+<h2 id="cpu-bound-io-bound">Выбор инструмента для CPU-bound и I/O-bound задач</h2>
+<p>В ходе выполнения работы были выявлены четкие критерии выбора инструментов:</p>
+<h3 id="1-cpu-bound">1. CPU-bound</h3>
+<p><strong>Что это:</strong> Математические расчеты, обработка изображений, архивация, работа с Big Data.
+<strong>Выбор:</strong> <code>multiprocessing</code>.
+<strong>Почему:</strong> Только процессы позволяют использовать несколько физических ядер процессора. Потоки в Python ограничены GIL и выполняются по очереди на одном ядре.</p>
+<h3 id="2-io-bound">2. I/O-bound</h3>
+<p><strong>Что это:</strong> Работа с БД, сетевые запросы (парсинг, API), чтение/запись файлов.
+<strong>Выбор:</strong> <code>asyncio</code> (предпочтительно) или <code>threading</code>.
+<strong>Почему:</strong> Большую часть времени программа ждет ответа от внешнего ресурса. Асинхронность позволяет Event Loop переключаться на другие задачи во время этого ожидания, не создавая тяжелые системные ресурсы (процессы/потоки).</p>
+<hr />
+<h2 id="_5">Итоговый вывод</h2>
+<ol>
+<li><strong>Multiprocessing</strong> незаменим для тяжелых вычислений, так как задействует все ядра CPU.</li>
+<li><strong>AsyncIO</strong> является лучшим выбором для работы с сетью и микросервисами благодаря легковесности.</li>
+<li><strong>Threading</strong> остается универсальным средством для простых I/O задач, но уступает AsyncIO при большом количестве соединений.</li>
+</ol></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
