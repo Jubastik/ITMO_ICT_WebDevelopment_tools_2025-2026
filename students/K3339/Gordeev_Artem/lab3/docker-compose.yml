@@ -1,0 +1,77 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: bookcrossing_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bookcrossing_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  main_api:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_URL=postgresql://postgres:password@db:5432/bookcrossing_db
+      - PARSER_API_URL=http://parser_api:8001/parse_sync
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      parser_api:
+        condition: service_started
+
+  parser_api:
+    build: .
+    command: uvicorn app.parser_api:app --host 0.0.0.0 --port 8001 --reload
+    volumes:
+      - .:/app
+    environment:
+      - DB_URL=postgresql://postgres:password@db:5432/bookcrossing_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  celery_worker:
+    build: .
+    command: celery -A app.celery_worker worker --loglevel=info -E
+    volumes:
+      - .:/app
+    environment:
+      - DB_URL=postgresql://postgres:password@db:5432/bookcrossing_db
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  flower:
+    build: .
+    command: celery -A app.celery_worker flower --port=5555
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+      celery_worker:
+        condition: service_started
